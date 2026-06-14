@@ -1,0 +1,12 @@
+{
+    "name": "translate",
+    "compatibility_date": "2026-06-14",
+    "assets": {
+        "directory": ".",
+        "binding": "ASSETS",
+        "ignore": [
+            "node_modules",
+            ".wrangler"
+        ]
+    }
+}
