@@ -1,0 +1,12 @@
+{
+  "name": "deepl-translator-pages",
+  "version": "1.0.0",
+  "description": "DeepL translation website for Cloudflare Pages",
+  "scripts": {
+    "dev": "wrangler pages dev .",
+    "deploy": "wrangler pages deploy ."
+  },
+  "devDependencies": {
+    "wrangler": "^3.60.0"
+  }
+}

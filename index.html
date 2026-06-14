@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translate - モダンUI版</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Modern Google Translate / Material 3 Styling */
+    :root {
+      --font-family: 'Roboto', 'Segoe UI', sans-serif;
+
+      /* Light Theme (Material 3) */
+      --bg-page: #ffffff;
+      --text-main: #1f1f1f;
+      --text-muted: #444746;
+      --text-disabled: #747775;
+      --border-color: #747775;
+      --border-light: #c7c7c7;
+
+      /* Accents */
+      --color-primary: #0b57d0;
+      /* Deep blue */
+      --bg-pill-active: #d3e3fd;
+      /* Light blue pill */
+      --text-pill-active: #041e49;
+
+      /* Panels */
+      --bg-input: #ffffff;
+      --bg-output: #f0f4f9;
+      /* Modern light blue-grey */
+
+      /* Interaction */
+      --hover-bg: rgba(68, 71, 70, 0.08);
+      --hover-bg-blue: rgba(11, 87, 208, 0.08);
+
+      --status-success: #146c2e;
+      --status-error: #b3261e;
+    }
+
+    [data-theme="dark"] {
+      /* Dark Theme */
+      --bg-page: #1f1f1f;
+      --text-main: #e3e3e3;
+      --text-muted: #c4c7c5;
+      --text-disabled: #8e918f;
+      --border-color: #8e918f;
+      --border-light: #444746;
+
+      --color-primary: #a8c7fa;
+      --bg-pill-active: #004a77;
+      --text-pill-active: #c2e7ff;
+
+      --bg-input: #1f1f1f;
+      --bg-output: #282a2c;
+
+      --hover-bg: rgba(196, 199, 197, 0.08);
+      --hover-bg-blue: rgba(168, 199, 250, 0.08);
+
+      --status-success: #6dd58c;
+      --status-error: #f2b8b5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 40px;
+    }
+
+    /* Top Navigation */
+    .top-nav {
+      width: 100%;
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .brand-logo {
+      width: 80px;
+      height: auto;
+    }
+
+    .brand-title {
+      color: var(--text-muted);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Icon Button (Circular) */
+    .btn-icon {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .btn-icon:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .btn-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    /* Layout Container */
+    .app-container {
+      width: 100%;
+      max-width: 1280px;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Feature Pills (Text, Image, Documents, Websites) */
+    .feature-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 36px;
+      border-radius: 18px;
+      border: 1px solid var(--border-light);
+      background-color: transparent;
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pill:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .pill.active {
+      background-color: var(--bg-pill-active);
+      color: var(--text-pill-active);
+      border-color: transparent;
+    }
+
+    .pill svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Settings Panel */
+    .settings-panel {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 24px;
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-panel.open {
+      display: flex;
+    }
+
+    .settings-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .settings-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .settings-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .settings-input {
+      width: 100%;
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 40px 14px 16px;
+      color: var(--text-main);
+      font-size: 16px;
+      font-family: monospace;
+    }
+
+    .settings-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      border-width: 2px;
+      padding: 13px 39px 13px 15px;
+      /* Offset border width */
+    }
+
+    .toggle-visibility {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .toggle-visibility svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    /* Plan Group */
+    .plan-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .plan-btn {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .plan-btn.active {
+      background-color: var(--bg-pill-active);
+      color: var(--text-pill-active);
+      border-color: transparent;
+    }
+
+    .save-settings-btn {
+      background-color: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    [data-theme="dark"] .save-settings-btn {
+      color: #041e49;
+    }
+
+    .save-settings-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Warning Banner */
+    .warning-bar {
+      background-color: #fce8e6;
+      color: #c5221f;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    [data-theme="dark"] .warning-bar {
+      background-color: #5c1e19;
+      color: #f2b8b5;
+    }
+
+    .warning-btn {
+      background: none;
+      border: 1px solid currentColor;
+      color: inherit;
+      padding: 6px 16px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Translation Area Layout */
+    .translation-area {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Language Bar */
+    .lang-bar {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .lang-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .lang-btn:hover {
+      background-color: var(--hover-bg);
+      color: var(--text-main);
+    }
+
+    .lang-btn.active {
+      color: var(--color-primary);
+    }
+
+    /* To simulate the modern blue underline, we use an inner span or just text color */
+    .lang-btn.active span {
+      position: relative;
+    }
+
+    .lang-btn.active span::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: var(--color-primary);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .lang-dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .lang-dropdown-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Swap Button in middle */
+    .swap-btn-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .swap-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s;
+    }
+
+    .swap-btn:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .swap-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    /* Translator Boxes Container */
+    .panels-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      min-height: 280px;
+    }
+
+    @media (max-width: 800px) {
+      .panels-container {
+        grid-template-columns: 1fr;
+      }
+
+      .lang-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .swap-btn-container {
+        padding: 8px 0;
+        align-self: center;
+        transform: rotate(90deg);
+      }
+    }
+
+    /* Individual Panel */
+    .panel {
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .input-panel {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-light);
+    }
+
+    .output-panel {
+      background-color: var(--bg-output);
+      border: 1px solid transparent;
+      /* Keeps layout stable */
+    }
+
+    [data-theme="dark"] .input-panel {
+      border-color: var(--border-color);
+    }
+
+    .textarea-wrapper {
+      flex: 1;
+      padding: 20px 24px;
+      position: relative;
+    }
+
+    .textarea-main {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      resize: none;
+      font-size: 24px;
+      font-family: var(--font-family);
+      color: var(--text-main);
+      outline: none;
+      line-height: 1.4;
+    }
+
+    .textarea-main::placeholder {
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    .output-view {
+      width: 100%;
+      height: 100%;
+      font-size: 24px;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+      line-height: 1.4;
+    }
+
+    .output-view.empty {
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    /* Panel Footer Actions */
+    .panel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      min-height: 56px;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: var(--text-disabled);
+      padding: 0 8px;
+    }
+
+    .char-count.warning {
+      color: var(--status-error);
+      font-weight: 500;
+    }
+
+    /* Loading Overlay */
+    .loading-shimmer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(240, 244, 249, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    [data-theme="dark"] .loading-shimmer {
+      background-color: rgba(40, 42, 44, 0.5);
+    }
+
+    .loading-shimmer.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(0, 0, 0, 0.05);
+      border-left-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background-color: var(--text-main);
+      color: var(--bg-page);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--status-success);
+    }
+
+    /* Native select styling inside the dropdown tab */
+    .hidden-select {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+    }
+
+    .dropdown-container {
+      position: relative;
+    }
+
+    /* History & Saved Circular Bottom Buttons */
+    .bottom-actions {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .bottom-action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .bottom-action-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 1px solid var(--border-light);
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: background-color 0.2s;
+    }
+
+    .bottom-action-btn:hover {
+      background-color: var(--hover-bg);
+    }
+
+    .bottom-action-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .bottom-action-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="brand">
+      <!-- <svg viewBox="0 0 24 24" style="width: 28px; height: 28px; fill: #4285f4; margin-right: -4px;">
+        <path
+          d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+      </svg> -->
+      <!-- Simulate Google logo text playfully with standard text -->
+      <span style="font-size: 22px; font-weight: 500; color: var(--text-muted); letter-spacing: -0.5px;">
+        <span style="color: #4285f4;">G</span><span style="color: #ea4335;">o</span><span
+          style="color: #fbbc05;">o</span><span style="color: #4285f4;">g</span><span
+          style="color: #34a853;">l</span><span style="color: #ea4335;">e</span> 翻訳
+      </span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-icon" id="toggle-theme-btn" title="テーマ切り替え">
+        <svg viewBox="0 0 24 24" id="theme-icon">
+          <!-- Light Mode Icon (Sun) Default -->
+          <path
+            d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z" />
+        </svg>
+      </button>
+      <button class="btn-icon" id="toggle-settings-btn" title="設定">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+        </svg>
+      </button>
+      <button class="btn-icon" title="アカウント"
+        style="background-color: var(--color-primary); color: white; width: 32px; height: 32px; margin-left: 8px;">
+        <span style="font-weight: bold; font-size: 14px;">A</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="app-container">
+
+    <!-- Feature Pills -->
+    <!-- <div class="feature-pills">
+      <button class="pill active">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" />
+        </svg>
+        テキスト
+      </button>
+      <button class="pill">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+        </svg>
+        画像
+      </button>
+      <button class="pill">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+        </svg>
+        ドキュメント
+      </button>
+      <button class="pill">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+        </svg>
+        ウェブサイト
+      </button>
+    </div> -->
+
+    <!-- API Config Panel -->
+    <div class="settings-panel" id="settings-panel">
+      <div class="settings-title">
+        <svg viewBox="0 0 24 24" style="fill: var(--color-primary); width: 20px; height: 20px;">
+          <path
+            d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
+        </svg>
+        DeepL API 設定
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">DeepL API キー</div>
+        <div class="settings-input-wrapper">
+          <input type="password" class="settings-input" id="api-key-input"
+            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx">
+          <button class="toggle-visibility" id="toggle-visibility-btn" type="button">
+            <svg viewBox="0 0 24 24" id="visibility-icon">
+              <path
+                d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">プラン</div>
+        <div class="plan-group">
+          <button class="plan-btn active" id="plan-free" onclick="setPlan(false)">Free</button>
+          <button class="plan-btn" id="plan-pro" onclick="setPlan(true)">Pro</button>
+        </div>
+      </div>
+      <button class="save-settings-btn" id="save-settings-btn">保存する</button>
+    </div>
+
+    <!-- Alert banner -->
+    <div class="warning-bar" id="api-warning-banner">
+      <span>翻訳機能を利用するには、DeepL APIキーを設定してください。</span>
+      <button class="warning-btn" id="api-warning-setup-btn">設定</button>
+    </div>
+
+    <!-- Main Translation Area -->
+    <div class="translation-area">
+      <!-- Language Selectors Row -->
+      <div class="lang-bar">
+
+        <!-- Source Languages -->
+        <div class="lang-section" id="source-tabs">
+          <button class="lang-btn active" data-value="auto"><span>言語を検出する</span></button>
+          <button class="lang-btn" data-value="en"><span>英語</span></button>
+          <button class="lang-btn" data-value="ja"><span>日本語</span></button>
+          <button class="lang-btn" data-value="ko"><span>韓国語</span></button>
+
+          <!-- Dropdown -->
+          <div class="dropdown-container lang-btn lang-dropdown-btn">
+            <span><svg viewBox="0 0 24 24">
+                <path d="M7 10l5 5 5-5z" />
+              </svg></span>
+            <select class="hidden-select" id="source-lang-select">
+              <option value="" disabled selected>その他</option>
+              <option value="zh">中国語</option>
+              <option value="fr">フランス語</option>
+              <option value="de">ドイツ語</option>
+              <option value="es">スペイン語</option>
+              <option value="it">イタリア語</option>
+              <option value="pt">ポルトガル語</option>
+              <option value="ru">ロシア語</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Swap Languages Button -->
+        <div class="swap-btn-container">
+          <button class="swap-btn" id="swap-lang-btn" title="言語を入れ替え">
+            <svg viewBox="0 0 24 24">
+              <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Target Languages -->
+        <div class="lang-section" id="target-tabs">
+          <button class="lang-btn" data-value="ja"><span>日本語</span></button>
+          <button class="lang-btn active" data-value="en-us"><span>英語</span></button>
+          <button class="lang-btn" data-value="ko"><span>韓国語</span></button>
+
+          <!-- Dropdown -->
+          <div class="dropdown-container lang-btn lang-dropdown-btn">
+            <span><svg viewBox="0 0 24 24">
+                <path d="M7 10l5 5 5-5z" />
+              </svg></span>
+            <select class="hidden-select" id="target-lang-select">
+              <option value="" disabled selected>その他</option>
+              <option value="en-gb">英語 (英国)</option>
+              <option value="zh">中国語</option>
+              <option value="fr">フランス語</option>
+              <option value="de">ドイツ語</option>
+              <option value="es">スペイン語</option>
+              <option value="it">イタリア語</option>
+              <option value="pt-br">ポルトガル語 (ブラジル)</option>
+              <option value="pt-pt">ポルトガル語 (ポルトガル)</option>
+              <option value="ru">ロシア語</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text Panels Container -->
+      <div class="panels-container">
+
+        <!-- Input Panel -->
+        <div class="panel input-panel">
+          <div class="textarea-wrapper">
+            <textarea class="textarea-main" id="source-textarea" placeholder="翻訳するテキストを入力してください" autofocus></textarea>
+          </div>
+          <div class="panel-footer">
+            <div class="action-group">
+              <!-- Material Mic Icon -->
+              <button class="btn-icon" title="音声入力 (未実装)" style="width: 40px; height: 40px;">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+                </svg>
+              </button>
+            </div>
+            <div class="action-group">
+              <div class="char-count" id="char-counter">0 / 5,000</div>
+              <!-- Clear Input Button (Pencil substitute / Clear) -->
+              <button class="btn-icon" id="clear-text-btn" title="入力をクリア" style="width: 40px; height: 40px;">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel output-panel">
+          <div class="loading-shimmer" id="loading-overlay">
+            <div class="spinner"></div>
+          </div>
+          <div class="textarea-wrapper">
+            <div class="output-view empty" id="target-output">翻訳</div>
+          </div>
+          <div class="panel-footer">
+            <div class="action-group">
+              <!-- Copy button -->
+              <button class="btn-icon" id="copy-btn" title="翻訳をコピー" style="width: 40px; height: 40px;">
+                <svg viewBox="0 0 24 24" id="copy-icon">
+                  <path
+                    d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                </svg>
+              </button>
+              <!-- Star icon (mock) -->
+              <button class="btn-icon" title="翻訳を保存" style="width: 40px; height: 40px;">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.03 4.38.38-3.32 2.88 1 4.28L12 15.4z" />
+                </svg>
+              </button>
+            </div>
+            <div class="action-group">
+              <!-- Thumbs up/down icons (mock) -->
+              <button class="btn-icon" title="良い翻訳" style="width: 40px; height: 40px;">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- History & Saved Bottom Buttons (mock style to match screenshot) -->
+    <div class="bottom-actions">
+      <div class="bottom-action-item">
+        <button class="bottom-action-btn">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+          </svg>
+        </button>
+        <span class="bottom-action-label">履歴</span>
+      </div>
+      <div class="bottom-action-item">
+        <button class="bottom-action-btn">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.03 4.38.38-3.32 2.88 1 4.28L12 15.4z" />
+          </svg>
+        </button>
+        <span class="bottom-action-label">保存済み</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Toast -->
+  <div class="toast" id="toast-message">
+    <svg viewBox="0 0 24 24">
+      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+    </svg>
+    <span id="toast-text">コピーしました！</span>
+  </div>
+
+  <script>
+    // State management
+    const state = {
+      apiKey: '',
+      isPro: false,
+      theme: 'light',
+      debounceTimer: null,
+      autoTargetLanguageDetermined: false,
+      userManuallySelectedTarget: false,
+      lastInputText: '',
+      isTranslating: false,
+
+      sourceLang: 'auto',
+      targetLang: 'en-us'
+    };
+
+    // DOM Elements
+    const elements = {
+      body: document.body,
+      toggleSettingsBtn: document.getElementById('toggle-settings-btn'),
+      toggleThemeBtn: document.getElementById('toggle-theme-btn'),
+      themeIcon: document.getElementById('theme-icon'),
+      settingsPanel: document.getElementById('settings-panel'),
+      apiKeyInput: document.getElementById('api-key-input'),
+      toggleVisibilityBtn: document.getElementById('toggle-visibility-btn'),
+      visibilityIcon: document.getElementById('visibility-icon'),
+      planFree: document.getElementById('plan-free'),
+      planPro: document.getElementById('plan-pro'),
+      saveSettingsBtn: document.getElementById('save-settings-btn'),
+      apiWarningBanner: document.getElementById('api-warning-banner'),
+      apiWarningSetupBtn: document.getElementById('api-warning-setup-btn'),
+
+      sourceTabs: document.getElementById('source-tabs'),
+      targetTabs: document.getElementById('target-tabs'),
+      sourceLangSelect: document.getElementById('source-lang-select'),
+      targetLangSelect: document.getElementById('target-lang-select'),
+
+      sourceTextarea: document.getElementById('source-textarea'),
+      targetOutput: document.getElementById('target-output'),
+      charCounter: document.getElementById('char-counter'),
+      clearTextBtn: document.getElementById('clear-text-btn'),
+      swapLangBtn: document.getElementById('swap-lang-btn'),
+
+      loadingOverlay: document.getElementById('loading-overlay'),
+      copyBtn: document.getElementById('copy-btn'),
+      copyIcon: document.getElementById('copy-icon'),
+      toastMessage: document.getElementById('toast-message'),
+      toastText: document.getElementById('toast-text')
+    };
+
+    // Initialize Page
+    function init() {
+      // Load Theme (Auto detect system preference or load from storage)
+      const savedTheme = localStorage.getItem('app_theme');
+      if (savedTheme) {
+        state.theme = savedTheme;
+      } else {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        state.theme = prefersDark ? 'dark' : 'light';
+      }
+      elements.body.setAttribute('data-theme', state.theme);
+      updateThemeIcon();
+
+      // Load API Settings
+      state.apiKey = localStorage.getItem('deepl_api_key') || '';
+      state.isPro = localStorage.getItem('deepl_is_pro') === 'true';
+
+      // UI setting restore
+      elements.apiKeyInput.value = state.apiKey;
+      setPlan(state.isPro, false);
+      updateAPIStatus();
+
+      // Settings toggles
+      elements.toggleSettingsBtn.addEventListener('click', () => elements.settingsPanel.classList.toggle('open'));
+      elements.toggleThemeBtn.addEventListener('click', toggleTheme);
+      elements.toggleVisibilityBtn.addEventListener('click', toggleKeyVisibility);
+      elements.saveSettingsBtn.addEventListener('click', saveSettings);
+      elements.apiWarningSetupBtn.addEventListener('click', () => {
+        elements.settingsPanel.classList.add('open');
+        elements.apiKeyInput.focus();
+      });
+
+      // Tab handlers
+      setupLanguageTabListeners();
+
+      // Select dropdown changes
+      elements.sourceLangSelect.addEventListener('change', handleSourceSelectChange);
+      elements.targetLangSelect.addEventListener('change', handleTargetSelectChange);
+
+      // Text events
+      elements.sourceTextarea.addEventListener('input', handleSourceInput);
+      elements.clearTextBtn.addEventListener('click', clearInput);
+      elements.swapLangBtn.addEventListener('click', swapLanguages);
+
+      // Ctrl + Enter shortcut
+      elements.sourceTextarea.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          triggerTranslation(true);
+        }
+      });
+
+      // Copy click
+      elements.copyBtn.addEventListener('click', copyTranslation);
+
+      // Focus
+      elements.sourceTextarea.focus();
+    }
+
+    // Toggle Theme
+    function toggleTheme() {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      elements.body.setAttribute('data-theme', state.theme);
+      localStorage.setItem('app_theme', state.theme);
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      if (state.theme === 'light') {
+        // Dark Mode Icon (Moon) to switch TO dark mode
+        elements.themeIcon.innerHTML = `<path d="M12 3c.132 0 .263 0 .393.007a7.5 7.5 0 0 0 7.92 12.446A9 9 0 1 1 12 2.99z"/>`;
+        elements.toggleThemeBtn.setAttribute('title', 'ダークモードに切り替え');
+      } else {
+        // Light Mode Icon (Sun) to switch TO light mode
+        elements.themeIcon.innerHTML = `<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0s-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.01c.39-.39.39-1.03 0-1.41s-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>`;
+        elements.toggleThemeBtn.setAttribute('title', 'ライトモードに切り替え');
+      }
+    }
+
+    // Toggle password eye icon
+    function toggleKeyVisibility() {
+      const type = elements.apiKeyInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      elements.apiKeyInput.setAttribute('type', type);
+      if (type === 'text') {
+        elements.visibilityIcon.innerHTML = `<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-4C7 3 2.73 6.11 1 10.5c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 6.11 17 3 12 3zm0 13c-3.03 0-5.5-2.47-5.5-5.5S8.97 5 12 5s5.5 2.47 5.5 5.5S15.03 16 12 16z"/>`;
+      } else {
+        elements.visibilityIcon.innerHTML = `<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>`;
+      }
+    }
+
+    // Plan Toggle Settings
+    function setPlan(isPro, shouldSave = true) {
+      state.isPro = isPro;
+      if (isPro) {
+        elements.planPro.classList.add('active');
+        elements.planFree.classList.remove('active');
+      } else {
+        elements.planFree.classList.add('active');
+        elements.planPro.classList.remove('active');
+      }
+    }
+
+    // Save Settings
+    function saveSettings() {
+      const key = elements.apiKeyInput.value.trim();
+      state.apiKey = key;
+
+      localStorage.setItem('deepl_api_key', key);
+      localStorage.setItem('deepl_is_pro', state.isPro);
+
+      updateAPIStatus();
+      showToast('設定を保存しました！');
+      elements.settingsPanel.classList.remove('open');
+
+      if (elements.sourceTextarea.value.trim()) {
+        triggerTranslation(true);
+      }
+    }
+
+    // Update Banner UI
+    function updateAPIStatus() {
+      if (state.apiKey) {
+        elements.apiWarningBanner.style.display = 'none';
+      } else {
+        elements.apiWarningBanner.style.display = 'flex';
+      }
+    }
+
+    // Language selector tabs
+    function setupLanguageTabListeners() {
+      // Source Tabs
+      const sourceTabs = elements.sourceTabs.querySelectorAll('.lang-btn:not(.dropdown-container)');
+      sourceTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          sourceTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          elements.sourceLangSelect.value = '';
+          state.sourceLang = tab.getAttribute('data-value');
+          triggerTranslation(true);
+        });
+      });
+
+      // Target Tabs
+      const targetTabs = elements.targetTabs.querySelectorAll('.lang-btn:not(.dropdown-container)');
+      targetTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          targetTabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          elements.targetLangSelect.value = '';
+          state.targetLang = tab.getAttribute('data-value');
+          state.userManuallySelectedTarget = true;
+          triggerTranslation(true);
+        });
+      });
+    }
+
+    function handleSourceSelectChange() {
+      const val = elements.sourceLangSelect.value;
+      if (!val) return;
+
+      const sourceTabs = elements.sourceTabs.querySelectorAll('.lang-btn:not(.dropdown-container)');
+      sourceTabs.forEach(t => t.classList.remove('active'));
+      elements.sourceTabs.querySelector('.lang-dropdown-btn').classList.add('active');
+
+      state.sourceLang = val;
+      triggerTranslation(true);
+    }
+
+    function handleTargetSelectChange() {
+      const val = elements.targetLangSelect.value;
+      if (!val) return;
+
+      const targetTabs = elements.targetTabs.querySelectorAll('.lang-btn:not(.dropdown-container)');
+      targetTabs.forEach(t => t.classList.remove('active'));
+      elements.targetTabs.querySelector('.lang-dropdown-btn').classList.add('active');
+
+      state.targetLang = val;
+      state.userManuallySelectedTarget = true;
+      triggerTranslation(true);
+    }
+
+    // Dynamic switching and input validation
+    function handleSourceInput() {
+      const text = elements.sourceTextarea.value;
+      const length = text.length;
+
+      // Update counter UI
+      elements.charCounter.textContent = `${length.toLocaleString()} / 5,000`;
+      if (length > 5000) {
+        elements.charCounter.classList.add('warning');
+      } else {
+        elements.charCounter.classList.remove('warning');
+      }
+
+      if (length === 0) {
+        state.autoTargetLanguageDetermined = false;
+        state.userManuallySelectedTarget = false;
+        clearOutput();
+        return;
+      }
+
+      // Auto Target Swapping Heuristics
+      if (!state.userManuallySelectedTarget && !state.autoTargetLanguageDetermined) {
+        const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+        if (hasJapanese) {
+          setTargetLanguageUI('en-us');
+          setSourceLanguageUI('auto');
+          state.autoTargetLanguageDetermined = true;
+        } else {
+          const hasLatin = /[a-zA-Z]/.test(text);
+          if (hasLatin) {
+            setTargetLanguageUI('ja');
+            setSourceLanguageUI('auto');
+            state.autoTargetLanguageDetermined = true;
+          }
+        }
+      }
+
+      // Debounce logic
+      clearTimeout(state.debounceTimer);
+      state.debounceTimer = setTimeout(() => {
+        triggerTranslation(false);
+      }, 800);
+    }
+
+    // Set UI helpers for setting source / target
+    function setSourceLanguageUI(langVal) {
+      state.sourceLang = langVal;
+      const tabs = elements.sourceTabs.querySelectorAll('.lang-btn:not(.dropdown-container)');
+      let matchedTab = false;
+      tabs.forEach(t => {
+        if (t.getAttribute('data-value') === langVal) {
+          t.classList.add('active');
+          matchedTab = true;
+        } else {
+          t.classList.remove('active');
+        }
+      });
+
+      if (!matchedTab) {
+        elements.sourceLangSelect.value = langVal;
+        elements.sourceTabs.querySelector('.lang-dropdown-btn').classList.add('active');
+      } else {
+        elements.sourceLangSelect.value = '';
+        elements.sourceTabs.querySelector('.lang-dropdown-btn').classList.remove('active');
+      }
+    }
+
+    function setTargetLanguageUI(langVal) {
+      state.targetLang = langVal;
+      const tabs = elements.targetTabs.querySelectorAll('.lang-btn:not(.dropdown-container)');
+      let matchedTab = false;
+      tabs.forEach(t => {
+        if (t.getAttribute('data-value') === langVal) {
+          t.classList.add('active');
+          matchedTab = true;
+        } else {
+          t.classList.remove('active');
+        }
+      });
+
+      if (!matchedTab) {
+        elements.targetLangSelect.value = langVal;
+        elements.targetTabs.querySelector('.lang-dropdown-btn').classList.add('active');
+      } else {
+        elements.targetLangSelect.value = '';
+        elements.targetTabs.querySelector('.lang-dropdown-btn').classList.remove('active');
+      }
+    }
+
+    // Swap Source and Target Languages
+    function swapLanguages() {
+      let currentSrc = state.sourceLang;
+      let currentTgt = state.targetLang;
+
+      if (currentTgt.startsWith('en')) currentTgt = 'en';
+      if (currentTgt.startsWith('pt')) currentTgt = 'pt';
+
+      if (currentSrc === 'auto') {
+        if (currentTgt === 'ja') {
+          setSourceLanguageUI('ja');
+          setTargetLanguageUI('en-us');
+        } else {
+          setSourceLanguageUI(currentTgt);
+          setTargetLanguageUI('ja');
+        }
+      } else {
+        setSourceLanguageUI(currentTgt);
+        setTargetLanguageUI(currentSrc === 'en' ? 'en-us' : (currentSrc === 'pt' ? 'pt-br' : currentSrc));
+      }
+
+      state.userManuallySelectedTarget = true;
+
+      const srcText = elements.sourceTextarea.value.trim();
+      const tgtText = elements.targetOutput.textContent.trim();
+
+      if (srcText && !elements.targetOutput.classList.contains('empty') && tgtText) {
+        elements.sourceTextarea.value = tgtText;
+        elements.targetOutput.textContent = srcText;
+        elements.charCounter.textContent = `${tgtText.length.toLocaleString()} / 5,000`;
+        state.lastInputText = tgtText;
+      }
+
+      triggerTranslation(true);
+    }
+
+    // Clear Text Action
+    function clearInput() {
+      elements.sourceTextarea.value = '';
+      elements.charCounter.textContent = '0 / 5,000';
+      elements.charCounter.classList.remove('warning');
+      state.autoTargetLanguageDetermined = false;
+      state.userManuallySelectedTarget = false;
+      clearOutput();
+      elements.sourceTextarea.focus();
+    }
+
+    function clearOutput() {
+      elements.targetOutput.textContent = '翻訳';
+      elements.targetOutput.classList.add('empty');
+    }
+
+    // Call CF Serverless API
+    async function triggerTranslation(isManual = false) {
+      const text = elements.sourceTextarea.value.trim();
+
+      if (!text) {
+        clearOutput();
+        return;
+      }
+
+      if (!isManual && text === state.lastInputText) {
+        return;
+      }
+
+      if (!state.apiKey) {
+        if (isManual) {
+          elements.settingsPanel.classList.add('open');
+          elements.apiKeyInput.focus();
+          showToast('APIキーを入力してください。', true);
+        }
+        return;
+      }
+
+      state.lastInputText = text;
+      state.isTranslating = true;
+      elements.loadingOverlay.classList.add('active');
+
+      try {
+        const response = await fetch('/api/translate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            apiKey: state.apiKey,
+            text: text,
+            targetLang: state.targetLang,
+            sourceLang: state.sourceLang,
+            isPro: state.isPro
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || `Error status: ${response.status}`);
+        }
+
+        if (data.translations && data.translations.length > 0) {
+          elements.targetOutput.textContent = data.translations[0].text;
+          elements.targetOutput.classList.remove('empty');
+        } else {
+          throw new Error('翻訳データが空でした。');
+        }
+
+      } catch (error) {
+        console.error('Translation error:', error);
+        elements.targetOutput.innerHTML = `<span style="color: var(--status-error); font-weight: 500;">エラー: ${error.message}</span>`;
+        elements.targetOutput.classList.remove('empty');
+      } finally {
+        state.isTranslating = false;
+        elements.loadingOverlay.classList.remove('active');
+      }
+    }
+
+    // Copy to Clipboard Action
+    async function copyTranslation() {
+      const text = elements.targetOutput.textContent;
+      if (elements.targetOutput.classList.contains('empty') || !text) {
+        showToast('コピーする翻訳結果がありません。', true);
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+
+        elements.copyIcon.innerHTML = `<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>`;
+        elements.copyBtn.style.color = 'var(--status-success)';
+
+        showToast('コピーしました！');
+
+        setTimeout(() => {
+          elements.copyIcon.innerHTML = `<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>`;
+          elements.copyBtn.style.color = '';
+        }, 2000);
+
+      } catch (err) {
+        console.error('Copy failed:', err);
+        showToast('コピーできませんでした。', true);
+      }
+    }
+
+    // Toast UI helper
+    let toastTimer;
+    function showToast(message, isError = false) {
+      const toast = elements.toastMessage;
+      document.getElementById('toast-text').textContent = message;
+
+      const icon = toast.querySelector('svg');
+      if (isError) {
+        toast.style.backgroundColor = 'var(--status-error)';
+        toast.style.color = 'var(--text-main)'; // In dark mode, ensure text is legible
+        icon.innerHTML = `<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>`;
+      } else {
+        toast.style.backgroundColor = 'var(--text-main)';
+        toast.style.color = 'var(--bg-page)';
+        icon.innerHTML = `<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>`;
+      }
+
+      toast.classList.add('show');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>

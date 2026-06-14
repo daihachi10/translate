@@ -1,0 +1,4 @@
+node_modules/
+.wrangler/
+.system_generated/
+*.log
